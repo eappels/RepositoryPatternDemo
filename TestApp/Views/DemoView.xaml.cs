@@ -1,18 +1,17 @@
 using TestApp.ViewModels;
 
-namespace TestApp.Views
-{
-    public partial class DemoView : ContentPage
-    {
-        public DemoView()
-        {
-            InitializeComponent();
-        }
+namespace TestApp.Views;
 
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-            await ((DemoViewModel)BindingContext).Read();
-        }
+public partial class DemoView : ContentPage
+{
+    public DemoView()
+    {
+        InitializeComponent();
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await ((DemoViewModel)BindingContext).Read();
     }
 }

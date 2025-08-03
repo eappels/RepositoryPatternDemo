@@ -16,7 +16,7 @@ public class DemoModelRepository : IRepository<DemoModel>
         _database.CreateTableAsync<Item>().Wait();
     }
 
-    public async Task Create(DemoModel model)
+    public async Task<int> Create(DemoModel model)
     {
         await _database.InsertAsync(model);
         var id = model.Id;
@@ -26,6 +26,12 @@ public class DemoModelRepository : IRepository<DemoModel>
             await _database.InsertAsync(item);
         }
         await Read();
+        return id;
+    }
+
+    public async Task<int> Create(Item item)
+    {
+        return await _database.InsertAsync(item);
     }
 
     public async Task<List<DemoModel>> Read()
@@ -38,6 +44,12 @@ public class DemoModelRepository : IRepository<DemoModel>
                 .ToListAsync();
         }
         return list;
+    }
+
+    public async Task<int> Update(int id)
+    {
+        var sql = $"UPDATE Item SET DemoModelId = {id} WHERE DemoModelId = -1";
+        return await _database.ExecuteAsync(sql, id);
     }
 
     public async Task<int> Delete(int id)

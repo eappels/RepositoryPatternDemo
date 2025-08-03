@@ -2,7 +2,8 @@
 
 public interface IRepository<T> where T : class
 {
-    Task Create(T entity);
+    Task<int> Create(T entity);
     Task<List<T>> Read();
+    Task<int> Update(int id);
     Task<int> Delete(int id);
 }

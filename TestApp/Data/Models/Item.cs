@@ -13,8 +13,9 @@ public class Item
     {        
     }
 
-    public Item(string name)
+    public Item(string name, int id)
     {
         Name = name;
+        DemoModelId = id;
     }
 }
