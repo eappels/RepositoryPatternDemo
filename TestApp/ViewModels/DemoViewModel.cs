@@ -21,8 +21,8 @@ namespace TestApp.ViewModels
         public async Task Save()
         {
             DemoModels.Clear();
-            var model = new DemoModel("Test Model " + DateTime.Now.Ticks);
-            for (int i = 1; i < 16; i++)
+            var model = new DemoModel("" + DateTime.Now.Ticks);
+            for (int i = 0; i < RandomNumberBetween(5, 15); i++)
             {                               
                 var Item = new Item($"Aname{i}");
                 model.Items.Add(Item);
@@ -38,11 +38,6 @@ namespace TestApp.ViewModels
             var models = await modelRepository.Read();
             foreach (var model in models)
             {
-                Debug.WriteLine($"Model: {model.Name}, Items Count: {model.Items.Count}");
-                foreach (var item in model.Items)
-                {
-                    Debug.WriteLine($"  Item: {item.Name}");
-                }
                 DemoModels.Add(model);
             }
         }
@@ -56,6 +51,13 @@ namespace TestApp.ViewModels
             }
             DemoModels.Clear();           
         }
+
+        private int RandomNumberBetween(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
+        }
+
 
         public ObservableCollection<DemoModel> DemoModels { get; set; } = new();
     }
