@@ -1,6 +1,6 @@
 ﻿using SQLite;
+using TestApp.Data.Models;
 using TestApp.Interfaces;
-using TestApp.Models;
 
 namespace TestApp.Data.Repositories;
 
@@ -13,25 +13,38 @@ public class DemoModelRepository : IRepository<DemoModel>
     {
         _database = new SQLiteAsyncConnection(dbPath);
         _database.CreateTableAsync<DemoModel>().Wait();
+        _database.CreateTableAsync<Item>().Wait();
     }
 
-    public async Task<int> Create(DemoModel model)
-    {                                            
-        return await _database.InsertAsync(model);
+    public async Task Create(DemoModel model)
+    {
+        await _database.InsertAsync(model);
+        var id = model.Id;
+        foreach (var item in model.Items)
+        {
+            item.DemoModelId = id;
+            await _database.InsertAsync(item);
+        }
+        await Read();
     }
 
     public async Task<List<DemoModel>> Read()
     {
-        return await _database.Table<DemoModel>().ToListAsync();
-    }
-
-    public async Task<int?> Update(DemoModel model)
-    {
-        return await _database.UpdateAsync(model);
+        var list = await _database.Table<DemoModel>().ToListAsync();
+        foreach (var model in list)
+        {
+            model.Items = await _database.Table<Item>()
+                .Where(x => x.DemoModelId == model.Id)
+                .ToListAsync();
+        }
+        return list;
     }
 
     public async Task<int> Delete(int id)
     {
+        await _database.Table<Item>()
+            .Where(x => x.DemoModelId == id)
+            .DeleteAsync();
         return await _database.Table<DemoModel>()
             .Where(x => x.Id == id)
             .DeleteAsync();

@@ -16,14 +16,24 @@
 
         <Label Text="Models:" FontAttributes="Bold" Margin="0,10,0,0" Grid.Row="3"/>
 
-        <ListView ItemsSource="{Binding Models}"
-                  Grid.Row="4"
-                  Margin="0,10,0,0">
-            <ListView.ItemTemplate>
+        <CollectionView ItemsSource="{Binding DemoModels}" Grid.Row="4">
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <TextCell Text="{Binding Name}" />
+                    <Border Margin="5" Padding="10">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" FontAttributes="Bold" />
+                            <Label Text="Items:" FontAttributes="Italic" Margin="0,5,0,0"/>
+                            <CollectionView ItemsSource="{Binding Items}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </Grid>
 </ContentPage>

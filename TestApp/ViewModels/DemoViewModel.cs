@@ -1,47 +1,62 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using TestApp.Data.Models;
 using TestApp.Data.Repositories;
-using TestApp.Models;
 
 namespace TestApp.ViewModels
 {
     public partial class DemoViewModel : ObservableObject
     {
-
         private readonly DemoModelRepository modelRepository;
 
         public DemoViewModel(DemoModelRepository modelRepository)
         {
-            Models = new List<DemoModel>();
+            DemoModels = new ObservableCollection<DemoModel>();
             this.modelRepository = modelRepository;
         }
 
         [RelayCommand]
         public async Task Save()
         {
-            for (int i = 0; i < 15; i++)
-                await modelRepository.Create(new DemoModel("Test Model " + DateTime.Now.Ticks));           
+            DemoModels.Clear();
+            var model = new DemoModel("Test Model " + DateTime.Now.Ticks);
+            for (int i = 1; i < 16; i++)
+            {                               
+                var Item = new Item($"Aname{i}");
+                model.Items.Add(Item);
+            }
+            await modelRepository.Create(model);
             await Read();
         }
 
         [RelayCommand]
         public async Task Read()
         {
-            Models.Clear();
-            Models = await modelRepository.Read();
+            DemoModels.Clear();
+            var models = await modelRepository.Read();
+            foreach (var model in models)
+            {
+                Debug.WriteLine($"Model: {model.Name}, Items Count: {model.Items.Count}");
+                foreach (var item in model.Items)
+                {
+                    Debug.WriteLine($"  Item: {item.Name}");
+                }
+                DemoModels.Add(model);
+            }
         }
 
         [RelayCommand]
         public async Task ClearDB()
         {                        
-            foreach (var item in Models)
+            foreach (var item in DemoModels)
             {
                 await modelRepository.Delete(item.Id);
             }
-            Models.Clear();           
+            DemoModels.Clear();           
         }
 
-        [ObservableProperty]
-        private List<DemoModel> models;
+        public ObservableCollection<DemoModel> DemoModels { get; set; } = new();
     }
 }
